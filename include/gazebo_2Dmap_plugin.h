@@ -107,6 +107,7 @@ class OccupancyMapFromWorld : public WorldPlugin {
   std::string name_;
   double map_resolution_;
   double map_height_;
+  double map_height_max;
   double map_size_x_;
   double map_size_y_;
   double init_robot_x_;

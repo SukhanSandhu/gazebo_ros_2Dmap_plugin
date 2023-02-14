@@ -29,6 +29,9 @@ include_directories(
 add_library(gazebo_2Dmap_plugin SHARED src/gazebo_2Dmap_plugin.cpp)
 target_link_libraries(gazebo_2Dmap_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
+add_executable(gazebo_2D_map_client src/gazebo_2Dmap_plugin_client.cpp)
+target_link_libraries(gazebo_2D_map_client ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
 install(TARGETS gazebo_2Dmap_plugin
 LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )

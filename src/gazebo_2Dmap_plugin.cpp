@@ -22,6 +22,7 @@
 
 #include <gazebo/common/Time.hh>
 #include <gazebo/common/CommonTypes.hh>
+#include<unistd.h>          
 
 
 namespace gazebo {
@@ -45,21 +46,24 @@ void OccupancyMapFromWorld::Load(physics::WorldPtr _parent,
   if(_sdf->HasElement("map_resolution"))
     map_resolution_ = _sdf->GetElement("map_resolution")->Get<double>();
 
-  map_height_ = 0.3;
+  map_height_ = -5;
 
   if(_sdf->HasElement("map_z"))
     map_height_ = _sdf->GetElement("map_z")->Get<double>();
+
+  map_height_ = -5;
 
   init_robot_x_ = 0.0;
 
   if(_sdf->HasElement("init_robot_x"))
     init_robot_x_ = _sdf->GetElement("init_robot_x")->Get<double>();
 
+
   init_robot_y_ = 0.0;
 
   if(_sdf->HasElement("init_robot_y"))
     init_robot_y_ = _sdf->GetElement("init_robot_y")->Get<double>();
-
+  
   map_size_x_ = 10.0;
 
   if(_sdf->HasElement("map_size_x"))
@@ -178,7 +182,11 @@ void OccupancyMapFromWorld::Load(physics::WorldPtr _parent,
 bool OccupancyMapFromWorld::ServiceCallback(std_srvs::Empty::Request& req,
                                             std_srvs::Empty::Response& res)
 {
+  ROS_INFO("%f is the height now",map_height_);
   CreateOccupancyMap();
+  map_height_+=map_resolution_; 
+  if (map_height_ > 20)
+    return false;
   return true;
 }
 
@@ -374,7 +382,7 @@ void OccupancyMapFromWorld::CreateOccupancyMap()
           child_val = occupancy_map_->data.at(child_index);
 
           //only update value if cell is unknown
-          if(child_val != 100 && child_val != 0 && child_val != 50)
+          if(child_val != 2 && child_val != 0 && child_val != 1)
           {
             cell2world(cell_x + i, cell_y + j, map_size_x_, map_size_y_, map_resolution_,
                        world_x, world_y);
@@ -384,7 +392,7 @@ void OccupancyMapFromWorld::CreateOccupancyMap()
 
             if(cell_occupied)
               //mark cell as occupied
-              occupancy_map_->data.at(child_index) = 100;
+              occupancy_map_->data.at(child_index) = 2;
 
 
             else
@@ -393,7 +401,7 @@ void OccupancyMapFromWorld::CreateOccupancyMap()
               wavefront.push_back(child_index);
               //mark wavefront in map so we don't add children to wavefront multiple
               //times
-              occupancy_map_->data.at(child_index) = 50;
+              occupancy_map_->data.at(child_index) = 1;
             }
           }
         }
